@@ -1,21 +1,17 @@
-import { FileGenerationInfo } from "../models";
+import { FileGenerationInfo } from '../models';
 
 export abstract class GeneratorService {
 	/* istanbul ignore next */
 	constructor() {}
 
 	private static generatedFiles: string[] = [];
-	private static invalidSourceFiles: string[] = [];
 	private static generationFailedFiles: string[] = [];
 	private static invalidEnums: string[] = [];
 	private static unsupportedEnums: string[] = [];
+	private static experimentalEnums: string[] = [];
 
 	public static addGeneratedFile(name: string): void {
 		this.generatedFiles.push(name);
-	}
-
-	public static addInvalidSourceFile(name: string): void {
-		this.invalidSourceFiles.push(name);
 	}
 
 	public static addGenerationFailedFile(name: string): void {
@@ -23,24 +19,24 @@ export abstract class GeneratorService {
 	}
 
 	public static addInvalidEnum(name: string): void {
-		if (!this.invalidEnums.includes(name)) {
-			this.invalidEnums.push(name);
-		}
+		this.invalidEnums.push(name);
 	}
 
 	public static addUnsupportedEnum(name: string): void {
-		if (!this.unsupportedEnums.includes(name)) {
-			this.unsupportedEnums.push(name);
-		}
+		this.unsupportedEnums.push(name);
+	}
+
+	public static addExperimentalEnum(name: string): void {
+		this.experimentalEnums.push(name);
 	}
 
 	public static getFileGenerationInfo(): FileGenerationInfo {
 		return {
 			generatedFiles: this.generatedFiles,
 			invalidEnums: this.invalidEnums,
-			invalidSourceFiles: this.invalidSourceFiles,
 			geneartionFailedFiles: this.generationFailedFiles,
-			unsupportedEnums: this.unsupportedEnums
+			unsupportedEnums: this.unsupportedEnums,
+			experimentalEnums: this.experimentalEnums
 		};
 	}
 }

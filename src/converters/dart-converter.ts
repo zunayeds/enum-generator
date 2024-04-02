@@ -27,12 +27,14 @@ export class DartConverter extends EnumConverterBase {
 				const isNumber = TypeHelper.isNumber(enumItem.value);
 				fileContent += `static ${isNumber ? 'int' : 'String'} get ${enumItem.name} => ${isNumber ? enumItem.value : StringHelper.addQuotation(enumItem.value)};`;
 			});
+
+			GeneratorService.addExperimentalEnum(genericEnum.name);
 		} else {
 			GeneratorService.addUnsupportedEnum(genericEnum.name);
 		}
 
 		fileContent += '\n}';
 
-		return  fileContent;
+		return fileContent;
 	}
 }

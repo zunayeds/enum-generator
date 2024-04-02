@@ -16,6 +16,8 @@ import { EnumParserBase } from '../parsers';
 import { ErrorHandler, StringHelper } from '../utilities';
 import { LogService } from '../services/log-service';
 import {
+	INVALID_ENUM_MESSAGE,
+	FILE_GENERATION_FAILED_FORMAT_MESSAGE,
 	INVALID_SOURCE_DIRECTORY_MESSAGE,
 	MISSING_ENUM_CONVERTER_IMPLEMENTATION_MESSAGE,
 	MISSING_ENUM_PARSER_IMPLEMENTATION_MESSAGE,
@@ -24,10 +26,12 @@ import {
 	SOURCE_LANGUAGE_REQUIRED_MESSAGE,
 	TARGET_LANGUAGE_REQUIRED_MESSAGE,
 	UNSUPPORTED_SOURCE_LANGUAGE_MESSAGE,
-	UNSUPPORTED_TARGET_LANGUAGE_MESSAGE
+	UNSUPPORTED_TARGET_LANGUAGE_MESSAGE,
+	Unsupported_ENUM_MESSAGE
 } from '../constants/messages/error-messages';
 import { FILE_GENERATION_SUCCESS_FORMAT_MESSAGE } from '../constants/messages/success-messages';
 import { GeneratorService } from '../services/generator-service';
+import { EXPERIMENTAL_ENUM_GENERATION_FORMAT_MESSAGE } from '../constants/messages/warning-messages';
 
 export abstract class GenerateCommand {
 	private constructor() {}
@@ -78,7 +82,9 @@ export abstract class GenerateCommand {
 					const genericEnums =
 						this.enumParser.parseFileContent(fileContent);
 					files = files.concat(
-						await this.enumConverter.convertEnumsToFiles(genericEnums)
+						await this.enumConverter.convertEnumsToFiles(
+							genericEnums
+						)
 					);
 				});
 			} else {
@@ -200,10 +206,36 @@ export abstract class GenerateCommand {
 
 	private static async logGenerationInfo(): Promise<void> {
 		const generationInfo = GeneratorService.getFileGenerationInfo();
-		
+
 		if (generationInfo.generatedFiles.length) {
 			await LogService.showSuccessMessage(
-				FILE_GENERATION_SUCCESS_FORMAT_MESSAGE(generationInfo.generatedFiles)
+				FILE_GENERATION_SUCCESS_FORMAT_MESSAGE(
+					generationInfo.generatedFiles
+				)
+			);
+		}
+		if (generationInfo.experimentalEnums.length) {
+			await LogService.showWarningMessage(
+				EXPERIMENTAL_ENUM_GENERATION_FORMAT_MESSAGE(
+					generationInfo.experimentalEnums
+				)
+			);
+		}
+		if (generationInfo.geneartionFailedFiles.length) {
+			await LogService.showErrorMessage(
+				FILE_GENERATION_FAILED_FORMAT_MESSAGE(
+					generationInfo.geneartionFailedFiles
+				)
+			);
+		}
+		if (generationInfo.invalidEnums.length) {
+			await LogService.showErrorMessage(
+				INVALID_ENUM_MESSAGE(generationInfo.invalidEnums)
+			);
+		}
+		if (generationInfo.unsupportedEnums.length) {
+			await LogService.showErrorMessage(
+				Unsupported_ENUM_MESSAGE(generationInfo.unsupportedEnums)
 			);
 		}
 	}

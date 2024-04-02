@@ -5,6 +5,7 @@ import {
 	GenericEnumItem,
 	LanguageConfigurationBase
 } from '../models';
+import { GeneratorService } from '../services/generator-service';
 
 export abstract class EnumParserBase {
 	protected readonly languageConfiguration: LanguageConfigurationBase;
@@ -20,7 +21,7 @@ export abstract class EnumParserBase {
 	}
 
 	protected parseFileContentInternal(fileContent: string): GenericEnum[] {
-		let match;
+		let match: RegExpExecArray | null;
 		const parsedEnums: GenericEnum[] = [];
 
 		while (
@@ -29,8 +30,19 @@ export abstract class EnumParserBase {
 			).exec(fileContent)) !== null
 		) {
 			const enumName = match[1];
+
 			const enumBody = match[2];
+			if (!enumBody.length) {
+				GeneratorService.addInvalidEnum(enumName);
+				continue;
+			}
+
 			const enumItems = this.parseEnumBody(enumBody);
+			if (!enumItems.length) {
+				GeneratorService.addInvalidEnum(enumName);
+				continue;
+			}
+
 			const enumType = this.determineEnumType(enumItems);
 			parsedEnums.push({
 				name: enumName,

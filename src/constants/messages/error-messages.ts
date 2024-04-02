@@ -1,3 +1,4 @@
+import { StringHelper } from '../../utilities';
 import {
 	GENERATE_COMMAND_SOURCE_LANGUAGE_OPTION,
 	GENERATE_COMMAND_TARGET_LANGUAGE_OPTION
@@ -49,3 +50,9 @@ export const INVALID_ENUM_CONFIG_VALUE_MESSAGE = (
 	key: string,
 	enumValues: string[]
 ) => `Invalid value for '${key}'. Expected one of ${enumValues.join(', ')}.`;
+export const FILE_GENERATION_FAILED_FORMAT_MESSAGE = (fileNames: string[]) =>
+	`Generation failed for file(s): ${StringHelper.convertToCommaSeparatedString(fileNames)}`;
+export const INVALID_ENUM_MESSAGE = (fileNames: string[]) =>
+	`Invalid Enum(s): ${StringHelper.convertToCommaSeparatedString(fileNames)}`;
+export const Unsupported_ENUM_MESSAGE = (fileNames: string[]) =>
+	`Unsupported Enum(s): ${StringHelper.convertToCommaSeparatedString(fileNames)}`;
