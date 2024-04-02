@@ -76,4 +76,24 @@ describe('StringHelper', () => {
 			expect(result).toBe("'123'");
 		});
 	});
+
+	describe('convertToCommaSeparatedString', () => {
+		it('should convert an array of strings to a comma-separated string', () => {
+			const input = ['apple', 'banana', 'cherry'];
+			const result = StringHelper.convertToCommaSeparatedString(input);
+			expect(result).toBe('apple, banana, cherry');
+		});
+
+		it('should return an empty string if the input array is empty', () => {
+			const input: string[] = [];
+			const result = StringHelper.convertToCommaSeparatedString(input);
+			expect(result).toBe('');
+		});
+
+		it('should handle an array with a single element', () => {
+			const input = ['apple'];
+			const result = StringHelper.convertToCommaSeparatedString(input);
+			expect(result).toBe('apple');
+		});
+	});
 });
