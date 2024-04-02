@@ -1,4 +1,9 @@
-import { ConfigService, FileService, FolderService } from '../services';
+import {
+	ConfigService,
+	FileService,
+	FolderService,
+	GeneratorService
+} from '../services';
 import {
 	LANGUAGE_CONFIG_MAPPINGS,
 	LANGUAGE_ENGINE_MAPPINGS,
@@ -30,7 +35,6 @@ import {
 	Unsupported_ENUM_MESSAGE
 } from '../constants/messages/error-messages';
 import { FILE_GENERATION_SUCCESS_FORMAT_MESSAGE } from '../constants/messages/success-messages';
-import { GeneratorService } from '../services/generator-service';
 import { EXPERIMENTAL_ENUM_GENERATION_FORMAT_MESSAGE } from '../constants/messages/warning-messages';
 
 export abstract class GenerateCommand {
@@ -221,10 +225,10 @@ export abstract class GenerateCommand {
 				)
 			);
 		}
-		if (generationInfo.geneartionFailedFiles.length) {
+		if (generationInfo.generationFailedFiles.length) {
 			await LogService.showErrorMessage(
 				FILE_GENERATION_FAILED_FORMAT_MESSAGE(
-					generationInfo.geneartionFailedFiles
+					generationInfo.generationFailedFiles
 				)
 			);
 		}

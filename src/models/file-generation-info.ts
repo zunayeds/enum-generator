@@ -1,6 +1,6 @@
 export interface FileGenerationInfo {
 	generatedFiles: string[];
-	geneartionFailedFiles: string[];
+	generationFailedFiles: string[];
 	invalidEnums: string[];
 	unsupportedEnums: string[];
 	experimentalEnums: string[];

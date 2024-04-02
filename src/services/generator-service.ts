@@ -34,7 +34,7 @@ export abstract class GeneratorService {
 		return {
 			generatedFiles: this.generatedFiles,
 			invalidEnums: this.invalidEnums,
-			geneartionFailedFiles: this.generationFailedFiles,
+			generationFailedFiles: this.generationFailedFiles,
 			unsupportedEnums: this.unsupportedEnums,
 			experimentalEnums: this.experimentalEnums
 		};

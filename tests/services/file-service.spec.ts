@@ -1,4 +1,4 @@
-import { StringCasingType } from '../../src/enums';
+import { EnumType, StringCasingType } from '../../src/enums';
 import { LanguageConfigurationBase } from '../../src/models';
 import { FileService } from '../../src/services/file-service';
 import { readFileSync, writeFileSync } from 'fs';
@@ -60,6 +60,7 @@ describe('FileService', () => {
 				const config: LanguageConfigurationBase = {
 					fileNameCasing: casing,
 					fileExtension: fileExtension,
+					supportedEnumTypes: [EnumType.General],
 					itemCasing: casing,
 					nameCasing: casing
 				};

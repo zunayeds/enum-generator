@@ -271,6 +271,34 @@ describe('ConfigService', () => {
 		});
 	});
 
+	describe('isExpermentalEnumGenerationEnabled', () => {
+		it('should return true if experimental enum generation is enabled', async () => {
+			const mockConfig = {
+				get: jest.fn().mockReturnValueOnce(true)
+			};
+			getProjectConfigSpy.mockResolvedValue(mockConfig as any);
+
+			const result =
+				await ConfigService.isExpermentalEnumGenerationEnabled();
+
+			expect(result).toBe(true);
+			expect(getProjectConfigSpy).toHaveBeenCalled();
+		});
+
+		it('should return false if experimental enum generation is disabled', async () => {
+			const mockConfig = {
+				get: jest.fn().mockReturnValueOnce(false)
+			};
+			getProjectConfigSpy.mockResolvedValue(mockConfig as any);
+
+			const result =
+				await ConfigService.isExpermentalEnumGenerationEnabled();
+
+			expect(result).toBe(false);
+			expect(getProjectConfigSpy).toHaveBeenCalled();
+		});
+	});
+
 	describe('convertValue', () => {
 		it('should convert a boolean value', () => {
 			const result = (ConfigService as any).convertValue(
