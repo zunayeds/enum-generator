@@ -11,14 +11,14 @@ class TestEnumConverter extends EnumConverterBase {
 		super(Language.TypeScript);
 	}
 
-	convertEnum(genericEnum: GenericEnum): string {
+	convertEnum(genericEnum: GenericEnum): Promise<string> {
 		let stringEnum = `enum ${genericEnum.name} {\n\t`;
 
 		stringEnum += genericEnum.items.map(item => item.name).join(',\n\t');
 
 		stringEnum += '\n}';
 
-		return stringEnum;
+		return Promise.resolve(stringEnum);
 	}
 }
 
@@ -30,7 +30,7 @@ describe('EnumConverterBase', () => {
 		converter = new TestEnumConverter();
 	});
 
-	it('should convert a list of generic enums to a string', () => {
+	it('should convert a list of generic enums to a string', async () => {
 		const genericEnums: GenericEnum[] = [
 			{
 				name: 'MyEnum1',
@@ -72,12 +72,12 @@ describe('EnumConverterBase', () => {
 
 		const expectedOutput = `enum MyEnum1 {\n\tValue1,\n\tValue2,\n\tValue3\n}\n\nenum MyEnum2 {\n\tValue4,\n\tValue5,\n\tValue6\n}`;
 
-		const result = converter.convertEnumsToString(genericEnums);
+		const result = await converter.convertEnumsToString(genericEnums);
 
 		expect(result).toEqual(expectedOutput);
 	});
 
-	it('should convert a list of generic enums to a list of code files', () => {
+	it('should convert a list of generic enums to a list of code files', async () => {
 		const genericEnums: GenericEnum[] = [
 			{
 				name: 'MyEnum1',
@@ -117,7 +117,7 @@ describe('EnumConverterBase', () => {
 			}
 		];
 
-		const result = converter.convertEnumsToFiles(genericEnums);
+		const result = await converter.convertEnumsToFiles(genericEnums);
 
 		expect(result).toHaveLength(2);
 		expect(result[0].fileName).toEqual('myEnum1.ts');

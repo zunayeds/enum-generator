@@ -92,7 +92,7 @@ export abstract class GenerateCommand {
 					);
 				});
 			} else {
-				filesToProcess.forEach(file => {
+				filesToProcess.forEach(async file => {
 					const fileContent = FileService.readFile(file);
 					const genericEnums =
 						this.enumParser.parseFileContent(fileContent);
@@ -106,7 +106,7 @@ export abstract class GenerateCommand {
 							this.targetLanguageConfiguration
 						),
 						fileContent:
-							this.enumConverter.convertEnumsToString(
+							await this.enumConverter.convertEnumsToString(
 								genericEnums
 							)
 					});

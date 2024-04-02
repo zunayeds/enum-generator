@@ -1,7 +1,11 @@
 import { DartConverter } from '../../src/converters';
 import { EnumType } from '../../src/enums';
 import { GenericEnum } from '../../src/models';
-import { FileService } from '../../src/services';
+import {
+	ConfigService,
+	FileService,
+	GeneratorService
+} from '../../src/services';
 import { DART_CONFIGURATION } from '../../src/constants/language-configurations';
 
 describe('DartConverter', () => {
@@ -12,7 +16,7 @@ describe('DartConverter', () => {
 	});
 
 	describe('convertEnumsToFiles', () => {
-		it('should convert a list of generic enums to a list of code files', () => {
+		it('should convert a list of generic enums to a list of code files', async () => {
 			const genericEnums: GenericEnum[] = [
 				{
 					name: 'TestEnum',
@@ -24,7 +28,7 @@ describe('DartConverter', () => {
 				}
 			];
 
-			const result = converter.convertEnumsToFiles(genericEnums);
+			const result = await converter.convertEnumsToFiles(genericEnums);
 
 			expect(result).toBeInstanceOf(Array);
 			expect(result).toHaveLength(genericEnums.length);
@@ -47,7 +51,7 @@ describe('DartConverter', () => {
 	});
 
 	describe('convertEnum', () => {
-		it('should convert a generic enum to a string', () => {
+		it('should convert a generic enum to a string', async () => {
 			const genericEnum: GenericEnum = {
 				name: 'TestEnum',
 				type: EnumType.General,
@@ -57,7 +61,12 @@ describe('DartConverter', () => {
 				]
 			};
 
-			const result = converter.convertEnum(genericEnum);
+			jest.spyOn(
+				ConfigService,
+				'isExpermentalEnumGenerationEnabled'
+			).mockResolvedValue(false);
+
+			const result = await converter.convertEnum(genericEnum);
 
 			expect(result).toContain(`enum ${genericEnum.name} {`);
 			genericEnum.items.forEach(item => {
@@ -66,7 +75,7 @@ describe('DartConverter', () => {
 			expect(result).toContain('\n}');
 		});
 
-		it('should convert an abstract class enum with string values correctly', () => {
+		it('should convert an unsupported enum with abstract class when expermental enum generation is enabled', async () => {
 			const heterogeneous: GenericEnum = {
 				type: EnumType.Heterogeneous,
 				name: 'Color',
@@ -79,9 +88,42 @@ describe('DartConverter', () => {
 
 			const expectedOutput = `abstract class Color {\n\tstatic String get Red => "Red";\n\tstatic int get Green => 2;\n\tstatic String get Blue => "Blue";\n}`;
 
-			const result = converter.convertEnum(heterogeneous);
+			jest.spyOn(
+				ConfigService,
+				'isExpermentalEnumGenerationEnabled'
+			).mockResolvedValue(true);
+			jest.spyOn(GeneratorService, 'addExperimentalEnum');
+
+			const result = await converter.convertEnum(heterogeneous);
 
 			expect(result).toBe(expectedOutput);
+			expect(GeneratorService.addExperimentalEnum).toHaveBeenCalledWith(
+				heterogeneous.name
+			);
+		});
+
+		it('should not convert an unsupported enum when expermental enum generation is not enabled', async () => {
+			const heterogeneous: GenericEnum = {
+				type: EnumType.Heterogeneous,
+				name: 'Color',
+				items: [
+					{ name: 'Red', value: 'Red' },
+					{ name: 'Green', value: 2 },
+					{ name: 'Blue', value: 'Blue' }
+				]
+			};
+
+			jest.spyOn(
+				ConfigService,
+				'isExpermentalEnumGenerationEnabled'
+			).mockResolvedValue(false);
+			jest.spyOn(GeneratorService, 'addUnsupportedEnum');
+
+			const result = await converter.convertEnum(heterogeneous);
+
+			expect(GeneratorService.addUnsupportedEnum).toHaveBeenCalledWith(
+				heterogeneous.name
+			);
 		});
 	});
 });

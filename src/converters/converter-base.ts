@@ -12,27 +12,31 @@ export abstract class EnumConverterBase {
 
 	abstract convertEnum(genericEnum: GenericEnum): Promise<string>;
 
-	public convertEnumsToString(genericEnums: GenericEnum[]): string {
-		return this.convertEnumsToStringInternal(genericEnums);
-	}
-
-	public async convertEnumsToFiles(genericEnums: GenericEnum[]): Promise<CodeFile[]> {
-		return  await this.convertEnumsToFilesInternal(genericEnums);
-	}
-
-	protected convertEnumsToStringInternal(
+	public async convertEnumsToString(
 		genericEnums: GenericEnum[]
-	): string {
-		let fileContent: string = '';
+	): Promise<string> {
+		return await this.convertEnumsToStringInternal(genericEnums);
+	}
 
-		genericEnums.forEach(async genericEnum => {
-			fileContent += '\n\n';
-			fileContent += await this.convertEnum(genericEnum);
+	public async convertEnumsToFiles(
+		genericEnums: GenericEnum[]
+	): Promise<CodeFile[]> {
+		return await this.convertEnumsToFilesInternal(genericEnums);
+	}
+
+	protected async convertEnumsToStringInternal(
+		genericEnums: GenericEnum[]
+	): Promise<string> {
+		let fileContents: string[] = [];
+
+		const promises = genericEnums.map(async genericEnum => {
+			const content = await this.convertEnum(genericEnum);
+			fileContents.push(content);
 		});
 
-		fileContent = fileContent.replace(/^\n\n/, '');
+		await Promise.all(promises);
 
-		return fileContent;
+		return fileContents.join('\n\n');
 	}
 
 	protected async convertEnumsToFilesInternal(
