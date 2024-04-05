@@ -1,6 +1,7 @@
 import { EnumParserBase } from '../../src/parsers/parser-base';
 import { EnumType, Language } from '../../src/enums';
 import { GenericEnumItem } from '../../src/models';
+import { GeneratorService } from '../../src/services';
 
 // mock all implemented parsers
 jest.mock('../../src/parsers/csharp-parser');
@@ -145,6 +146,73 @@ describe('EnumParserBase', () => {
 			const result = parser.parseFileContent(fileContent);
 
 			expect(result).toEqual(expectedEnums);
+		});
+
+		it('should skip parsing the enum in file content where items are missing', () => {
+			const fileContent = `
+                enum MyEnum {
+                    VALUE1 = 1,
+                    VALUE2 = 2,
+                    VALUE3 = 3,
+                }
+
+				enum MyEnum2 {
+				}
+            `;
+			const expectedEnums = [
+				{
+					name: 'MyEnum',
+					type: EnumType.Numeric,
+					items: [
+						{ name: 'VALUE1', value: 1 },
+						{ name: 'VALUE2', value: 2 },
+						{ name: 'VALUE3', value: 3 }
+					]
+				}
+			];
+
+			jest.spyOn(GeneratorService, 'addInvalidEnum');
+
+			const result = parser.parseFileContent(fileContent);
+
+			expect(result).toEqual(expectedEnums);
+			expect(GeneratorService.addInvalidEnum).toHaveBeenCalledWith(
+				'MyEnum2'
+			);
+		});
+
+		fit('should skip parsing the enum in file content where items are in invalid form', () => {
+			const fileContent = `
+                enum MyEnum {
+                    VALUE1 = 1,
+                    VALUE2 = 2,
+                    VALUE3 = 3,
+                }
+
+				enum MyEnum2 {
+					VALUE4: 4
+				}
+            `;
+			const expectedEnums = [
+				{
+					name: 'MyEnum',
+					type: EnumType.Numeric,
+					items: [
+						{ name: 'VALUE1', value: 1 },
+						{ name: 'VALUE2', value: 2 },
+						{ name: 'VALUE3', value: 3 }
+					]
+				}
+			];
+
+			jest.spyOn(GeneratorService, 'addInvalidEnum');
+
+			const result = parser.parseFileContent(fileContent);
+
+			expect(result).toEqual(expectedEnums);
+			expect(GeneratorService.addInvalidEnum).toHaveBeenCalledWith(
+				'MyEnum2'
+			);
 		});
 	});
 });

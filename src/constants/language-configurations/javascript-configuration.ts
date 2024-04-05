@@ -1,6 +1,5 @@
-import { EnumType, Language, StringCasingType } from '../../enums';
+import { EnumType, StringCasingType } from '../../enums';
 import { LanguageConfigurationBase } from '../../models';
-import { JavaScriptParser } from '../../parsers';
 
 export const JAVASCRIPT_CONFIGURATION: LanguageConfigurationBase = {
 	fileNameCasing: StringCasingType.CamelCase,

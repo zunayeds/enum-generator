@@ -1,4 +1,4 @@
-import { EnumType, Language, StringCasingType } from '../../enums';
+import { EnumType, StringCasingType } from '../../enums';
 import { LanguageConfigurationBase } from '../../models';
 
 export const CSHARP_CONFIGURATION: LanguageConfigurationBase = {

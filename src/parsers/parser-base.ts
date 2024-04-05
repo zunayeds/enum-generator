@@ -31,7 +31,7 @@ export abstract class EnumParserBase {
 		) {
 			const enumName = match[1];
 
-			const enumBody = match[2];
+			const enumBody = match[2].trim();
 			if (!enumBody.length) {
 				GeneratorService.addInvalidEnum(enumName);
 				continue;
